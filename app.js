@@ -27,7 +27,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(keys.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(keys.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
   .then(() => {
     app.listen(keys.PORT);
   })
