@@ -10,6 +10,15 @@ const keys = require("./utils/keys");
 const app = express();
 
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+  next();
+});
 app.use("/api/places", placesRoutes);
 app.use("/api/users", usersRouter);
 
@@ -27,7 +36,11 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(keys.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+  .connect(keys.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
   .then(() => {
     app.listen(keys.PORT);
   })
