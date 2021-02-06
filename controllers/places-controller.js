@@ -42,7 +42,7 @@ const getPlacesByUserId = async (req, res, next) => {
   }
 
   if (!places || places.length === 0) {
-    const error = new HttpError("could not find that... sorry", 404);
+    const error = new HttpError("No place here ! Maybe add one?", 404);
     return next(error);
   }
   res.json({
