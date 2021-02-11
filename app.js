@@ -11,6 +11,9 @@ const usersRouter = require("./routes/users-routes");
 const keys = require("./utils/keys");
 
 const app = express();
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 app.use(bodyParser.json());
 
@@ -47,7 +50,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(keys.MONGO_URL, {
+  .connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.iczlc.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,

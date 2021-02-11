@@ -54,7 +54,7 @@ const signup = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: createdUser.id, email: createdUser.email },
-      "supersecret_dont_share",
+      process.env.JWT_KEY,
       { expiresIn: "1h" }
     );
   } catch (err) {
@@ -109,7 +109,7 @@ const login = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: existingUser.id, email: existingUser.email },
-      "supersecret_dont_share",
+      process.env.JWT_KEY,
       { expiresIn: "1h" }
     );
   } catch (err) {
@@ -127,16 +127,25 @@ const login = async (req, res, next) => {
   });
 };
 
-const getUsersById = (req, res, next) => {
+const getUsersById = async (req, res, next) => {
   const userId = req.params.uid;
-  const user = DUMMY_USERS.find((u) => {
-    return u.id === userId;
-  });
+
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find user",
+      500
+    );
+    return next(error);
+  }
 
   if (!user) {
-    throw new HttpError("could not find that... oops", 404);
+    const error = new HttpError("could not find a user with that ID", 404);
+    return next(error);
   }
-  res.json({ user });
+  res.json({ user: user.toObject({ getters: true }) });
 };
 
 const getUsers = async (req, res, next) => {
