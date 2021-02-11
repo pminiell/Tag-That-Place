@@ -76,6 +76,7 @@ const createPlace = async (req, res, next) => {
     image: req.file.path,
     creator: req.userData.userId
   });
+  
   let user;
 
   try {
@@ -103,8 +104,8 @@ const createPlace = async (req, res, next) => {
     const error = new HttpError("creating place failed", 500);
     return next(error);
   }
-
-  res.status(201).json({ place: createdPlace });
+  
+  res.status(201).json({ place: createdPlace.toObject({ getters: true}) });
 };
 
 const updatePlace = async (req, res, next) => {
