@@ -52,9 +52,9 @@ mongoose
     }
   )
   .then(() => {
-    app.listen(keys.PORT);
+    app.listen(process.env.PORT || 5000);
   })
   .catch((err) => {
     console.log(err);
   });
-console.log(`Server is running on PORT: ${keys.PORT}`);
+console.log(`Server is running on PORT: ${process.env.PORT}`);
