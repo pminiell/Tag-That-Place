@@ -31,7 +31,7 @@ This project was a huge leap in complexity and allowed me to learn more about:
 * MVC design principles
 * Authentication and Authorization
 * File Upload and Storage 
-
+* Using git consistently in my workflow
 
 
 ## License
