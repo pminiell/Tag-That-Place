@@ -19,14 +19,19 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/uploads/images", express.static(path.join("uploads", "images")));
+app.use(express.static(path.join('public')));
 
 app.use("/api/places", placesRoutes);
 app.use("/api/users", usersRouter);
 
 app.use((req, res, next) => {
-  const error = new HttpError("Page not found", 404);
-  throw error;
-});
+  res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+})
+
+// app.use((req, res, next) => {
+//   const error = new HttpError("Page not found", 404);
+//   throw error;
+// });
 
 app.use((error, req, res, next) => {
   if (req.file) {
