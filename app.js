@@ -41,6 +41,8 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || "An unknown error occured!" });
 });
 
+const PORT = process.env.PORT || 3001;
+
 mongoose
   .connect(
     `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.iczlc.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
@@ -51,9 +53,9 @@ mongoose
     }
   )
   .then(() => {
-    app.listen(5000);
+    app.listen(PORT);
   })
   .catch((err) => {
     console.log(err);
   });
-console.log(`Server is running on PORT: ${process.env.PORT}`);
+console.log(`Server is running on PORT: ${PORT}`);
