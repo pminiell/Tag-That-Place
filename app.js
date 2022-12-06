@@ -18,7 +18,7 @@ dotenv.config();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use('/uploads/images', express.static(path.join('uploads', 'images')));
+app.use('/temp/images', express.static(path.join('tmp', 'images')));
 app.use(express.static(path.join('public')));
 
 app.use('/api/places', placesRoutes);
