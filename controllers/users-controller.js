@@ -1,29 +1,28 @@
-const { validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const User = require("../models/user");
-const HttpError = require("../models/http-error");
+const User = require('../models/user');
+const HttpError = require('../models/http-error');
 
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return next(new HttpError("Invalid inputs, please try again", 422));
+    return next(new HttpError('Invalid inputs, please try again', 422));
   }
 
   const { name, email, password } = req.body;
-
   let existingUser;
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
-    const error = new HttpError("Could not find email", 500);
+    const error = new HttpError('Could not find email', 500);
     return next(error);
   }
 
   if (existingUser) {
-    const error = new HttpError("User already exists, please login", 422);
+    const error = new HttpError('User already exists, please login', 422);
     return next(error);
   }
 
@@ -31,14 +30,13 @@ const signup = async (req, res, next) => {
   try {
     hashedPassword = await bcrypt.hash(password, 12);
   } catch (err) {
-    const error = new HttpError("Could not create user", 500);
+    const error = new HttpError('Could not create user', 500);
     return next(error);
   }
 
   const createdUser = new User({
     name,
     email,
-    image: req.file.path,
     password: hashedPassword,
     places: [],
   });
@@ -46,7 +44,7 @@ const signup = async (req, res, next) => {
   try {
     await createdUser.save();
   } catch (err) {
-    const error = new HttpError("User signup failed", 500);
+    const error = new HttpError('User signup failed', 500);
     return next(error);
   }
 
@@ -55,11 +53,11 @@ const signup = async (req, res, next) => {
     token = jwt.sign(
       { userId: createdUser.id, email: createdUser.email },
       process.env.JWT_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: '1h' }
     );
   } catch (err) {
     const error = new HttpError(
-      "Signing up failed, please try again later",
+      'Signing up failed, please try again later',
       500
     );
     return next(error);
@@ -77,13 +75,13 @@ const login = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
-    const error = new HttpError("Login failed. Could not find email", 500);
+    const error = new HttpError('Login failed. Could not find email', 500);
     return next(error);
   }
 
   if (!existingUser) {
     const error = new HttpError(
-      "Invalid credentials, could not log you in",
+      'Invalid credentials, could not log you in',
       401
     );
     return next(error);
@@ -93,13 +91,13 @@ const login = async (req, res, next) => {
   try {
     isValidPassword = await bcrypt.compare(password, existingUser.password);
   } catch (err) {
-    const error = new HttpError("Could not login, check credentials ", 500);
+    const error = new HttpError('Could not login, check credentials ', 500);
     return next(error);
   }
 
   if (!isValidPassword) {
     const error = new HttpError(
-      "Invalid credentials, could not log you in",
+      'Invalid credentials, could not log you in',
       401
     );
     return next(error);
@@ -110,11 +108,11 @@ const login = async (req, res, next) => {
     token = jwt.sign(
       { userId: existingUser.id, email: existingUser.email },
       process.env.JWT_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: '1h' }
     );
   } catch (err) {
     const error = new HttpError(
-      "Logging in failed, please try again later",
+      'Logging in failed, please try again later',
       500
     );
     return next(error);
@@ -135,14 +133,14 @@ const getUsersById = async (req, res, next) => {
     user = await User.findById(userId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not find user",
+      'Something went wrong, could not find user',
       500
     );
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError("could not find a user with that ID", 404);
+    const error = new HttpError('could not find a user with that ID', 404);
     return next(error);
   }
   res.json({ user: user.toObject({ getters: true }) });
@@ -151,9 +149,9 @@ const getUsersById = async (req, res, next) => {
 const getUsers = async (req, res, next) => {
   let users;
   try {
-    users = await User.find({}, "-password");
+    users = await User.find({}, '-password');
   } catch (err) {
-    const error = new HttpError("fetching users failed", 500);
+    const error = new HttpError('fetching users failed', 500);
     return next(error);
   }
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });

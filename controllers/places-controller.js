@@ -55,10 +55,10 @@ const getPlacesByUserId = async (req, res, next) => {
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(`HERE (3) ${errors}`);
-    return next(new HttpError('Invalid inputs, please try again', 422));
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    );
   }
-
   const { title, description, address } = req.body;
 
   let coordinates;
@@ -73,23 +73,25 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image: req.file.path,
     creator: req.userData.userId,
   });
 
   let user;
-
   try {
     user = await User.findById(req.userData.userId);
   } catch (err) {
-    const error = new HttpError('Creating place failed, please try again', 500);
+    const error = new HttpError(
+      'Creating place failed, please try again.',
+      500
+    );
     return next(error);
   }
 
   if (!user) {
-    const error = new HttpError('could not find user for user id', 404);
+    const error = new HttpError('Could not find user for provided id.', 404);
     return next(error);
   }
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -98,11 +100,14 @@ const createPlace = async (req, res, next) => {
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
-    const error = new HttpError('creating place failed', 500);
+    const error = new HttpError(
+      'Creating place failed, please try again.',
+      500
+    );
     return next(error);
   }
 
-  res.status(201).json({ place: createdPlace.toObject({ getters: true }) });
+  res.status(201).json({ place: createdPlace });
 };
 
 const updatePlace = async (req, res, next) => {
@@ -168,8 +173,6 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
-  const imagePath = place.image;
-
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -181,10 +184,6 @@ const deletePlace = async (req, res, next) => {
     const error = new HttpError('could not delete , try again later');
     return next(error);
   }
-
-  fs.unlink(imagePath, (err) => {
-    console.log(`HERE? (2) ${err}`);
-  });
 
   res.status(200).json({ message: 'Place deleted' });
 };
